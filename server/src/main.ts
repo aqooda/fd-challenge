@@ -1,8 +1,23 @@
+import { ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { AllExceptionFilter } from './all-exception.filter';
+import { ValidationException } from './exceptions';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  await app.listen(3000);
+  const app = await NestFactory.create(AppModule, { cors: true });
+  const config: ConfigService = app.get(ConfigService);
+
+  app.useGlobalFilters(new AllExceptionFilter());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      stopAtFirstError: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      exceptionFactory: (errors) => new ValidationException(errors),
+    }),
+  );
+  await app.listen(config.get('PORT'));
 }
 bootstrap();
