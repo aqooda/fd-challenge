@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { CryptocurrenciesModule } from './cryptocurrencies/cryptocurrencies.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { AuthModule } from './auth/auth.module';
       envFilePath: ['.env', '.env.local', '.env.development', '.env.production'],
       isGlobal: true,
     }),
+    CryptocurrenciesModule,
     TypeOrmModule.forRootAsync({
       useFactory: (configService: ConfigService) => {
         const isDevelopment = configService.get('NODE_ENV') === 'development';
