@@ -1,30 +1,33 @@
 import React, { useCallback, useContext, useState } from 'react';
+import type { AuthInfo } from '@/types/auth';
 
 interface AuthContext {
-  accessToken: string | null;
-  updateAccessToken: (accessToken: string | null) => void;
+  authInfo: AuthInfo | null;
+  updateAuthInfo: (authInfo: AuthInfo | null) => void;
 }
 
-const ACCESS_TOKEN_KEY = '@fd-challenge/accessToken';
+const AUTH_INFO_KEY = '@fd-challenge/authInfo';
 
 const AuthContext = React.createContext<AuthContext>({
-  accessToken: null,
-  updateAccessToken: () => void 0,
+  authInfo: null,
+  updateAuthInfo: () => void 0,
 });
 
 const AuthContextProvider: React.FC<React.PropsWithChildren<Record<string, unknown>>> = ({ children }) => {
-  const [accessToken, setAccessToken] = useState<string | null>(window.localStorage.getItem(ACCESS_TOKEN_KEY));
-  const updateAccessToken = useCallback((newAccessToken: string | null) => {
-    if (newAccessToken === null) {
-      window.localStorage.removeItem(ACCESS_TOKEN_KEY);
+  const [authInfo, setAuthInfo] = useState<AuthInfo | null>(
+    JSON.parse(window.localStorage.getItem(AUTH_INFO_KEY) as string),
+  );
+  const updateAuthInfo = useCallback((newAuthInfo: AuthInfo | null) => {
+    if (newAuthInfo === null) {
+      window.localStorage.removeItem(AUTH_INFO_KEY);
     } else {
-      window.localStorage.setItem(ACCESS_TOKEN_KEY, newAccessToken);
+      window.localStorage.setItem(AUTH_INFO_KEY, JSON.stringify(newAuthInfo));
     }
 
-    setAccessToken(newAccessToken);
+    setAuthInfo(newAuthInfo);
   }, []);
 
-  return <AuthContext.Provider value={{ accessToken, updateAccessToken }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ authInfo, updateAuthInfo }}>{children}</AuthContext.Provider>;
 };
 
 const memorizedAuthContextProvider = React.memo(AuthContextProvider);
