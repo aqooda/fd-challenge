@@ -1,0 +1,7 @@
+.exchange-rates-container {
+  min-width: 200px;
+  display: grid;
+  justify-content: center;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
