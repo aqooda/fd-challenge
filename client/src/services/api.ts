@@ -11,7 +11,9 @@ export const createCancelableRequest = () => {
       signal: abortController.signal,
     })
       .then(async (response) => {
-        const responseData = await response.json();
+        const responseData = response.headers.get('content-type')?.includes('application/json')
+          ? await response.json()
+          : await response.text();
 
         if (response.status >= 400) {
           throw new ApiError(responseData);
